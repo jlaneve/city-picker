@@ -30,7 +30,7 @@ Finding and processing the data was a challenge because we used many sources tha
 
 We also had some discussions around how (if at all) to preprocess the data before clustering it. Eventually we decided to give each column zero mean and unit variance, which improved the quality of our clusters. When it came to clustering, the written algorithm does work, but we went with sklearn.KMeans for performance purposes, however the written one gave us good data on how the clusters changed over each time step.
 
-Website stuff… tabs etc
+With respect to the web application we had some difficulty working as a team simultaneously with Microsoft Liveshare. 
 
 ## Accomplishments that we're proud of
 We are proud of being able to put out such a large project in ~24 hours. It required bringing elements from many different stacks including data analysis, web development and tools like Excel.
