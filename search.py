@@ -127,9 +127,9 @@ params = [
         "title": "I Prefer a Population That Is",
         "id": "age",
         "opts": [
-            {"label": "Younger", "value": "high"},
+            {"label": "Older", "value": "high"},
             {"label": "Average Aged", "value": "medium"},
-            {"label": "Older", "value": "low"},
+            {"label": "Younger", "value": "low"},
         ]
     },
 ]

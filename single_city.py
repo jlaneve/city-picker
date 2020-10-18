@@ -14,6 +14,7 @@ import dash_bootstrap_components as dbc
 import wikipedia
 
 from crime_timeseries import render_crime
+from weather import render_precip, render_temp
 
 def make_gender_chart(raw_genders):
     genders = raw_genders
@@ -58,6 +59,17 @@ def make_unemployment_chart(unemployment_rate):
     ))
 
     return fig
+    
+def make_job_graph(raw_jobs):
+    jobs = raw_jobs
+    jobs.name = "percentage"
+    jobs = pd.DataFrame(jobs).reset_index()
+
+    jobs["job"] = jobs["index"].apply(lambda x: x.split("_")[1])
+    fig = px.bar(jobs, y = "percentage", x = "job", color = "job", title = "Job composition")
+
+    return fig
+
 
 pop_dem_tab = lambda row: dbc.Card(
     dbc.CardBody([
@@ -69,32 +81,44 @@ pop_dem_tab = lambda row: dbc.Card(
 
         html.Hr(),
 
-        # Gender graph
-        dcc.Graph(
-            id = "gender",
-            figure = make_gender_chart(
-                row[["pct_men", "pct_women"]]
+        html.Div(children = [
+            # Gender graph
+            dcc.Graph(
+                id = "gender",
+                figure = make_gender_chart(
+                    row[["pct_men", "pct_women"]]
+                ),
+                className="center-align col-sm-6"
             ),
-            className="center-align"
-        ),
 
-        # Ethnicities graph
-        dcc.Graph(
-            id = "ethnicity",
-            figure = make_races_chart(
-                row[["pct_hispanic", "pct_white", "pct_black", "pct_native", "pct_asian", "pct_pacific"]]
+            # Ethnicities graph
+            dcc.Graph(
+                id = "ethnicity",
+                figure = make_races_chart(
+                    row[["pct_hispanic", "pct_white", "pct_black", "pct_native", "pct_asian", "pct_pacific"]]
+                ),
+                className="center-align col-sm-6"
             ),
-            className="center-align"
-        ),
 
-        # Unemployment graph
-        dcc.Graph(
-            id = "unemployment",
-            figure = make_unemployment_chart(
-                row["pct_unemployed"]
+            # Job graph
+            dcc.Graph(
+                id = "jobs",
+                figure = make_job_graph(
+                    row[["pct_professional", "pct_service", "pct_office", "pct_construction", "pct_production"]]
+                ),
+                className="center-align col-sm-6"
             ),
-            className="center-align"
-        ),
+
+            # Unemployment graph
+            dcc.Graph(
+                id = "unemployment",
+                figure = make_unemployment_chart(
+                    row["pct_unemployed"]
+                ),
+                className="center-align col-sm-6"
+            ),
+
+        ], className="row"),
     ])
 )
 
@@ -105,6 +129,19 @@ safety_tab = lambda row: dbc.Card(
         html.Hr(),
 
         render_crime(row)
+    ])
+)
+
+weather_tab = lambda df, state, city: dbc.Card(
+    dbc.CardBody([
+        html.Div("United States Weather Statistics", className="content-title"),
+
+        html.Hr(),
+
+        html.Div(children=[
+            html.Div(render_temp(df, state, city), className="col-sm-10 offset-sm-1"),
+            html.Div(render_precip(df, state, city), className="col-sm-10 offset-sm-1")
+        ], className="row")
     ])
 )
 
@@ -150,7 +187,7 @@ def badges(row, size_filter, diversity_filter, education_filter,
     if transit_filter:
         if transit_filter == "highest":
             els.append(
-                dbc.Badge("Ranked #{} most used transit".format(int(row["transit_rank"])), color="info", className="ml-1 float-right")
+                dbc.Badge("Ranked #{} most used transit".format(int(row["transportation_rank"])), color="info", className="ml-1 float-right")
             )
     if poverty_filter:
         if poverty_filter == "low":
@@ -162,7 +199,7 @@ def badges(row, size_filter, diversity_filter, education_filter,
 
 def make_city(row, crime_over_time, size_filter, diversity_filter, education_filter,
     wealth_filter, home_price_filter, weather_filter, covid_filter, profession_filter, transit_filter,
-    poverty_filter, age_filter, eid = None):
+    poverty_filter, age_filter, df ,eid = None):
     if eid == None:
         eid = row.name
 
@@ -187,6 +224,7 @@ def make_city(row, crime_over_time, size_filter, diversity_filter, education_fil
                     dbc.Tab("", label="PICK A TAB ->"),
                     dbc.Tab(pop_dem_tab(row), label="POP & DEM"),
                     dbc.Tab(safety_tab(crime_over_time[crime_over_time['state_name_x'] == row["state_name_x"]]), label="SAFETY"),
+                    dbc.Tab(weather_tab(df, row['state_name_x'], row['city']), label="WEATHER"),
                 ])
             ]),
         ], className="mb-3",),

@@ -45,11 +45,11 @@ def recommendations(user, num_recs=20):
     Returns the top num_recs recommendations for a given feature vector
 
     Parameters:
-        -user: the user vector
-        -num_recs: the number of recommendations to return (default: 15)
+        - user: the user vector
+        - num_recs: the number of recommendations to return (default: 15)
 
     Returns:
-        -A list of ranked cities and states
+        - A list of ranked cities and states
 
     """
     
@@ -156,11 +156,10 @@ def update_list(size_filter, diversity_filter, education_filter,
 
     return html.Div(children=[
         render_map(filtered_df),
-        # danger_over_time[danger_over_time['state_name_x'] == 'Texas']
         html.Div([
             html.Div(make_city(row, danger_over_time, size_filter, diversity_filter, education_filter,
                 wealth_filter, home_price_filter, weather_filter, covid_filter, profession_filter, transit_filter,
-                poverty_filter, age_filter)) for i, row in filtered_df.iloc[0:5].iterrows()
+                poverty_filter, age_filter, df)) for i, row in filtered_df.iloc[0:5].iterrows()
         ])
     ])
 
