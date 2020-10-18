@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 import dash_bootstrap_components as dbc
 import wikipedia
 
+from crime_timeseries import render_crime
 
 def make_gender_chart(raw_genders):
     genders = raw_genders
@@ -102,6 +103,8 @@ safety_tab = lambda row: dbc.Card(
         html.Div("Public Safety Statistics", className="content-title"),
 
         html.Hr(),
+
+        render_crime(row)
     ])
 )
 
@@ -183,8 +186,7 @@ def make_city(row, crime_over_time, size_filter, diversity_filter, education_fil
                 dbc.Tabs([
                     dbc.Tab("", label="PICK A TAB ->"),
                     dbc.Tab(pop_dem_tab(row), label="POP & DEM"),
-                    dbc.Tab(safety_tab(crime_over_time), label="SAFETY"),
-                    dbc.Tab(filler_tab(row), label="Tab 3"),
+                    dbc.Tab(safety_tab(crime_over_time[crime_over_time['state_name_x'] == row["state_name_x"]]), label="SAFETY"),
                 ])
             ]),
         ], className="mb-3",),
